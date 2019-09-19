@@ -10,7 +10,7 @@ const Video = ({activeVideo, onEndedCallBack, onProgressCallBack}) => {
                 height="100%" 
                 width="100%"
                 style={{ position : "absolute", top: "0"}} 
-                url={activeVideo}
+                url={activeVideo.video}
                 onEnded={onEndedCallBack}
                 onProgress={onProgressCallBack}
                 />

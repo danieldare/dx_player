@@ -4,7 +4,7 @@ import Video from '../Video/Video';
 import Playlist from '../Playlist/Playlist';
 import { videosList } from '../../videoList';
 
-const DxPLayer = ({ match, history }) => {
+const DxPLayer = ({ history }) => {
     const [ state, setState ] = useState({
         videos: videosList.playlist,
         autoplay: false,
@@ -13,27 +13,42 @@ const DxPLayer = ({ match, history }) => {
     });
 
     useEffect(() => {
-        const videoId = match.params.activeVideo;
-        if(videoId !== undefined){
-            const newVideoIndex = state.videos.findIndex(video => video.id === videoId);
-            setState(prevState => ({
-                ...prevState,
-                activeVideo: prevState.videos[newVideoIndex],
-            }))
+        const id = history.location.pathname.split("/")[1];
+        if(id !== undefined){
+            const newVideoIndex = state.videos.findIndex(video => video.id === id);
+            setState({
+                    ...state,
+                    activeVideo: state.videos[newVideoIndex]
+                })
         }else{
             history.push({
                 pathname: `/${state.activeVideo.id}`,
-                autoplay: false
+                autoplay: false,
             });
         }
-    }, [ history, state.activeVideo.id , match.params.activeVideo , state.videos ])
+    }, [ history, state.videos, state.activeVideo.id, state]);
 
     const onEndCallBack = () =>  {
-        
+        const videoId = history.location.pathname.split("/")[1];
+        let currentVideoIndex = state.videos.findIndex(video => video.id === videoId);
+
+        let nextVideoIndex = (currentVideoIndex === state.videos.length - 1) ? 0 : currentVideoIndex + 1;
+        history.push({
+            pathname: `${state.videos[nextVideoIndex].id}`,
+            autoplay: true
+        })
     }
 
-    const onProgressCallBack = () => {
-        
+    const onProgressCallBack = (e) => {
+        if(e.playedSeconds > 5 && e.playedSeconds < 6){
+            const videos = [...state.videos];
+            const currentplayedVideo = videos.find(video => video.id === state.activeVideo.id);
+            currentplayedVideo.played = true;
+            setState(prevstate => ({
+                ...prevstate,
+                videos
+            }))
+        }
     }
 
     const nightMode = () => {
@@ -51,9 +66,10 @@ const DxPLayer = ({ match, history }) => {
             <Playlist 
                 nightMode={nightMode} 
                 videos={state.videos} 
+                activeVideo={state.activeVideo}
             />
         </StyledDxPlayer>
     )
 }
 
-export default DxPLayer
+export default DxPLayer;

@@ -1,10 +1,14 @@
 import React from 'react'
+import StyledPlaylistHeader from './PlaylistHeader.style';
 
-const PlaylistHeader = () => {
+const PlaylistHeader = ({activeVideo, videos}) => {
     return (
-        <div>
-            Playlist Header
-        </div>
+        <StyledPlaylistHeader>
+            <div>
+                Playlist Header 
+            </div>
+            <p>{activeVideo.num}/{videos.length}</p>
+        </StyledPlaylistHeader>
     )
 }
 
